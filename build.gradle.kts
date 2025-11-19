@@ -1,6 +1,8 @@
+import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
-    // in each subproject's classloader
+    // in each subproject"s classloader
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.composeHotReload) apply false
@@ -10,6 +12,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.ktor) apply false
     alias(libs.plugins.publish) apply false
+    alias(libs.plugins.artifactory) apply false
 }
 val build_number = providers.gradleProperty("project.build_number").getOrElse("SNAPSHOT")
 
@@ -47,6 +50,28 @@ subprojects {
                     url = "https://github.com/yuanjingtech/recruit-app-kmp"
                     connection = "scm:git:git://github.com/yuanjingtech/recruit-app-kmp.git"
                     developerConnection = "scm:git:ssh://git@github.com/yuanjingtech/recruit-app-kmp.git"
+                }
+            }
+        }
+    }
+}
+
+val pluginId = libs.plugins.artifactory.get().pluginId
+subprojects {
+    val artifactory_contextUrl: String by extra
+    val artifactory_user: String by extra
+    val artifactory_password: String by extra
+    plugins.withId(pluginId) {
+        configure<ArtifactoryPluginConvention> {
+            publish {
+                contextUrl = artifactory_contextUrl
+                repository {
+                    repoKey = "gradle-dev-local"
+                    username = artifactory_user
+                    password = artifactory_password
+                }
+                defaults {
+                    publications("ALL_PUBLICATIONS")
                 }
             }
         }

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.publish)
+    alias(libs.plugins.artifactory)
 }
 
 kotlin {
